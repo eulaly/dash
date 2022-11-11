@@ -15,12 +15,12 @@ void main() async {
       child: const MaterialApp(
         title: 'Dashboard',
         home: MyApp(),
-/*         initialRoute: '/',
+        /* initialRoute: '/',
         routes: {
           '/': (context) => const MyApp(),
           '/about': (context) => const AboutScreen(),
           '/newcar': (context) => const NewCarScreen(),
-          '/detail': (context) => CarDetailScreen(),
+          '/detail': (context) => const CarDetailScreen(),
           '/edit': (context) => EditCarScreen(),
         }, */
       ),
@@ -115,6 +115,7 @@ class _Garage extends State<Garage> {
   @override
   void initState() {
     _cars = Provider.of<GarageModel>(context, listen: false).getCars();
+    // _cars = Provider.of<GarageModel>(context).getCars();
     super.initState();
   }
 
@@ -136,19 +137,29 @@ class _Garage extends State<Garage> {
             return Expanded(
                 child: Consumer<GarageModel>(builder: (context, garage, child) {
               return ListView.separated(
+                // padding: const EdgeInsets.all(8),
                 itemCount: garage._cars.length,
                 itemBuilder: (context, index) => ListTile(
                   leading: const Icon(Icons.directions_car),
                   title: Text(garage.cars[index].nickname ?? "nick_ph"),
                   subtitle: Text(garage.cars[index].vin ?? "vin_ph"),
+/*                   trailing: IconButton(
+                    onPressed: Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditCarScreen(
+                              car: garage._cars[index], carIndex: index)),
+                    ),
+                    icon: Icons.edit),
+                    ),
+                  onTap: () => Navigator.pushNamed(context, '/detail'), */
                   onTap: () {
-                    Navigator.of(context)
-                        .push(
-                            MaterialPageRoute(
-                          builder: (context) =>
-                              CarDetailScreen(carIndex: index),
-                        ))
-                        .then((value) => setState(() {}));
+                    Navigator.of(context).push(
+                      // context,
+                      MaterialPageRoute(
+                        builder: (context) => CarDetailScreen(carIndex: index),
+                      ),
+                    );
                   },
                 ),
                 separatorBuilder: (BuildContext context, int index) =>
@@ -201,10 +212,11 @@ class _CurrentCar extends State<CurrentCar> {
                     // padding: const EdgeInsets.all(8),
                     itemCount: garage.txns.length,
                     itemBuilder: (context, index) => ListTile(
-                        // dense: true, //only affects text, use visualDensity instead
+                        // dense: true,
                         visualDensity:
                             const VisualDensity(horizontal: 0, vertical: -4),
                         leading: const Icon(Icons.local_gas_station),
+                        // leading: const Icon(Icons.build),
                         title: Text(garage.txns[index].txntype ?? "type"),
                         subtitle: Text(garage.txns[index].note ?? "note"),
                         onTap: (() => VoidCallback)),
@@ -452,7 +464,7 @@ class _NewCarScreenState extends State<NewCarScreen> {
                             mileage: _car.mileage);
                       });
                       var garage =
-                          context.read<GarageModel>();
+                          context.read<GarageModel>(); //implement Provider
                       garage.add(_car);
                       _form.reset();
                       Navigator.pushNamed(context, '/');
@@ -494,18 +506,15 @@ class _NewCarScreenState extends State<NewCarScreen> {
   }
 }
 
-class CarDetailScreen extends StatefulWidget {
+class CarDetailScreen extends StatelessWidget {
+  // const CarDetailScreen({super.key, required this.car, required this.carIndex});
   CarDetailScreen({super.key, required this.carIndex});
-  final int carIndex;
-  @override
-  State<CarDetailScreen> createState() => _CarDetailScreenState();
-}
-
-class _CarDetailScreenState extends State<CarDetailScreen> {
-  late Car car = context.watch<GarageModel>()._cars[widget.carIndex];
+  final int carIndex; //pass this thru for edit screen
+  // late Car car;
 
   @override
   Widget build(BuildContext context) {
+    late Car car = context.read<GarageModel>()._cars[carIndex];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 185, 47, 5),
@@ -528,12 +537,12 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     child: IconButton(
                       icon: const Icon(Icons.edit),
                       color: Colors.white,
-                      onPressed: () async {
-                        await Navigator.push(
+                      onPressed: () {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EditCarScreen(
-                                  car: car, carIndex: widget.carIndex)),
+                              builder: (context) =>
+                                  EditCarScreen(car: car, carIndex: carIndex)),
                         );
                       },
                     ),
@@ -555,16 +564,18 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        // add txn
         onPressed: () {
           Navigator.of(context).push(
+            // context,
             MaterialPageRoute(
               builder: (context) => NewTxn(
                   car: car,
-                  carIndex: widget.carIndex),
+                  carIndex: carIndex), //add car index so you can update?
             ),
           );
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.edit),
       ),
     );
   }
@@ -581,7 +592,7 @@ class EditCarScreen extends StatefulWidget {
 
 class _EditCarScreenState extends State<EditCarScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late Car car = widget.car;
+  late Car car = widget.car; //initialization is required
   late int carIndex = widget.carIndex;
 
   @override
@@ -599,6 +610,7 @@ class _EditCarScreenState extends State<EditCarScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              //new car form text fields
               TextFormField(
                 initialValue: car.nickname,
                 decoration: const InputDecoration(
@@ -724,7 +736,6 @@ class _NewTxnState extends State<NewTxn> {
   late int carIndex = widget.carIndex;
   DateTime datetime = DateTime.now();
   Txn txn = Txn();
-  bool refresh = false;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? timepicked = await showDatePicker(
@@ -782,9 +793,8 @@ class _NewTxnState extends State<NewTxn> {
                 decoration: const InputDecoration(
                   labelText: 'Cost',
                 ),
-                initialValue: "0",
                 onSaved: (val) =>
-                    setState(() => txn.cost = double.parse(val ?? "0")),
+                    setState(() => txn.cost = double.parse(val ?? "")),
                 keyboardType: TextInputType.number,
               ),
               TextFormField(
@@ -827,7 +837,13 @@ class _NewTxnState extends State<NewTxn> {
                       print(txn.toMap());
                       garage.insertTxn(txn);
                       form.reset();
-                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              CarDetailScreen(carIndex: carIndex),
+                        ),
+                      );
+                      // Navigator.of(context).pop();
                     }
                   },
                   child: Row(
@@ -846,6 +862,41 @@ class _NewTxnState extends State<NewTxn> {
     );
   }
 }
+
+/* class MyDatePicker extends StatefulWidget {
+  const MyDatePicker({super.key});
+  @override
+  State<MyDatePicker> createState() => _MyDatePicker();
+}
+
+class _MyDatePicker extends State<MyDatePicker> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      Flexible(
+        flex: 1,
+        child: IconButton(
+            onPressed: () async {
+              showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.utc(1776, 7, 4),
+                  lastDate: DateTime.utc(2222, 2, 22));
+            },
+            icon: const Icon(Icons.calendar_month)),
+      ),
+      Flexible(
+        flex: 3,
+        child: InputDatePickerFormField(
+            firstDate: DateTime.utc(1776, 7, 4),
+            lastDate: DateTime.utc(2222, 2, 22),
+            initialDate: DateTime.now(),
+            onDateSaved: (val) =>
+                setState(() => txn.datetime = val.millisecondsSinceEpoch)),
+      ),
+    ]);
+  }
+} */
 
 /* class IconPicker extends SimpleDialog {
   IconPicker({super.key})

@@ -35,8 +35,8 @@ class DbHelperSqlite {
   }
 
   Future _onCreate(Database db, int version) async {
-    //docs say to avoid autoincrement
-    //looks like this may be a null issue?
+    //docs say to avoid `autoincrement` kw
+    await db.execute("PRAGMA foreign_keys=ON;");
     await db.execute('''
       CREATE TABLE ${Car.tblCars} (
         ${Car.colId} INTEGER PRIMARY KEY,
@@ -44,6 +44,8 @@ class DbHelperSqlite {
         ${Car.colNickname} TEXT,
         ${Car.colMileage} INTEGER,
         ${Car.colPlate} TEXT);
+        ''');
+    await db.execute('''
       CREATE TABLE ${Txn.tblTxns} (
         ${Txn.colId} INTEGER PRIMARY KEY,
         ${Txn.colType} TEXT,
@@ -51,8 +53,9 @@ class DbHelperSqlite {
         ${Txn.colCost} REAL,
         ${Txn.colMileage} INTEGER,
         ${Txn.colNote} TEXT,
-        FOREIGN KEY(${Txn.colCarId}) REFERENCES ${Car.tblCars}(${Car.colId}),
-        )''');
+        ${Txn.colCarId} INTEGER,
+        FOREIGN KEY(${Txn.colCarId}) REFERENCES ${Car.tblCars}(${Car.colId}));
+        ''');
   }
 
   Future<int> insertCar(Car car) async {
@@ -88,6 +91,47 @@ class DbHelperSqlite {
   Future<int> deleteAll() async {
     Database db = await instance.database as Database;
     return await db.rawDelete("DELETE FROM ${Car.tblCars}");
+  }
+
+  Future<int> insertTxn(Txn txn) async {
+    Database db = await instance.database as Database;
+    print('adding txn ${txn.txntype} at ${txn.datetime}');
+    return await db.insert(Txn.tblTxns, txn.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.abort);
+  }
+
+/*   Future<List<Txn>> fetchTxns(int carid, {txntype = '*'}) async {
+    Database db = await instance.database as Database;
+    List<Map<String, dynamic>> txns = await db.query(Txn.tblTxns,
+        where: '${Txn.colCarId}=? and ${Txn.colType}=?',
+        whereArgs: [carid, txntype]);
+    if (txns.isEmpty) {
+      return [];
+    } else {
+      return txns.map((txn) => Txn.fromMap(txn)).toList();
+    }
+  } */
+  Future<List<Txn>> fetchTxns(int carid) async {
+    Database db = await instance.database as Database;
+    List<Map<String, dynamic>> txns = await db
+        .query(Txn.tblTxns, where: '${Txn.colCarId}=?', whereArgs: [carid]);
+    if (txns.isEmpty) {
+      return [];
+    } else {
+      return txns.map((txn) => Txn.fromMap(txn)).toList();
+    }
+  }
+
+  Future<int> deleteTxn(Txn txn) async {
+    Database db = await instance.database as Database;
+    print('txn id to delete: ${txn.id}');
+    return await db
+        .delete(Txn.tblTxns, where: '${Txn.colId}=?', whereArgs: [txn.id]);
+  }
+
+  Future<int> deleteAllTxns() async {
+    Database db = await instance.database as Database;
+    return await db.rawDelete("DELETE FROM ${Txn.tblTxns}");
   }
 }
 
