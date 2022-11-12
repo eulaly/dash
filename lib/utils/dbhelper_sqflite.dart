@@ -88,7 +88,7 @@ class DbHelperSqlite {
         .delete(Car.tblCars, where: '${Car.colId}=?', whereArgs: [car.id]);
   }
 
-  Future<int> deleteAll() async {
+  Future<int> deleteAllCars() async {
     Database db = await instance.database as Database;
     return await db.rawDelete("DELETE FROM ${Car.tblCars}");
   }
