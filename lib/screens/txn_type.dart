@@ -32,7 +32,9 @@ class TxnTypeState extends State<TxnType> {
 
   Widget rIcon(
       {required int index, required String text, required IconData icon}) {
-    return Container(
+    return AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           shape: BoxShape.circle,

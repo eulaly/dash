@@ -79,7 +79,14 @@ class _NewTxnScreenState extends State<NewTxnScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Cost',
                 ),
-                initialValue: "0",
+                initialValue: "",
+                onTap: () {
+                  final ft = TextEditingController();
+                  ft.clear();
+                  setState(() {
+                    ft.text = "";
+                  });
+                },
                 onSaved: (val) =>
                     setState(() => txn.cost = double.parse(val ?? "0")),
                 keyboardType: TextInputType.number,
@@ -117,8 +124,6 @@ class _NewTxnScreenState extends State<NewTxnScreen> {
                       setState(() {
                         txn.datetime = DateTime.now().millisecondsSinceEpoch;
                         txn.txntype = txnType.selectedText;
-                        print(
-                            "txntype set to ${txn.txntype} from radio ${txnType.selectedText}");
                         txn.carid = car.id;
                         car.mileage = txn.mileage; // update car mileage too
                       });

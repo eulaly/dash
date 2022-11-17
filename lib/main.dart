@@ -71,6 +71,20 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.tune),
+            title: const Text('IconPicker'),
+            onTap: () {
+              showDialog(
+                  barrierColor: Colors.black.withOpacity(.5),
+                  context: context,
+                  builder: (BuildContext context) {
+                    return IconPicker();
+                  });
+              /* Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => IconPicker())); */
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('About'),
             onTap: () {

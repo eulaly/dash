@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dash/utils/garage_model.dart';
 import 'package:dash/models/car.dart';
-import '../utils/garage_model.dart';
+import 'package:dash/screens/screens.dart';
 
 class NewCarScreen extends StatefulWidget {
   const NewCarScreen({super.key});
@@ -14,6 +14,8 @@ class NewCarScreen extends StatefulWidget {
 class _NewCarScreenState extends State<NewCarScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   Car car = Car(); //initialization is required
+  late IconPicker ip = IconPicker();
+  late String selectedIcon = 'images/car.png';
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,6 @@ class _NewCarScreenState extends State<NewCarScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              //new car form text fields
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: 'Nickname',
@@ -81,6 +82,22 @@ class _NewCarScreenState extends State<NewCarScreen> {
                   return null;
                 },
               ),
+              ListTile(
+                  leading: CircleAvatar(
+                      backgroundImage: AssetImage(selectedIcon),
+                      backgroundColor: Colors.white),
+                  title: const Text("Change Icon"),
+                  onTap: () => showDialog(
+                      barrierColor: Colors.black.withOpacity(.5),
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ip;
+                      }).then((value) => setState(
+                        () {
+                          // selectedIcon = ip.selectedIcon;
+                          selectedIcon = value;
+                        },
+                      ))),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
@@ -96,6 +113,7 @@ class _NewCarScreenState extends State<NewCarScreen> {
                             vin: car.vin,
                             nickname: car.nickname,
                             plate: car.plate,
+                            icon: selectedIcon,
                             mileage: car.mileage);
                       });
                       // var garage = context.read<GarageModel>();

@@ -9,6 +9,7 @@ import 'package:dash/screens/screens.dart';
 class CarDetailScreen extends StatefulWidget {
   const CarDetailScreen({super.key, required this.carIndex});
   final int carIndex;
+  // late Car car;
 
   @override
   State<CarDetailScreen> createState() => _CarDetailScreenState();
@@ -20,13 +21,13 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // late Car car = Provider.of<GarageModel>(context).cars[widget.carIndex];
+    late Car car = Provider.of<GarageModel>(context).cars[widget.carIndex];
     // late Car car = context.watch<GarageModel>()_cars[widget.carIndex];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 185, 47, 5),
-        // title: Text(car.nickname ?? ""),
-        title: const Text("View Car"),
+        title: Text(car.nickname ?? ""),
+        // title: const Text("View Car"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -36,7 +37,6 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const Text("plh img picker"),
                 Center(
                   // edit car screen
                   child: Ink(
@@ -58,11 +58,6 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                 ),
               ],
             ),
-            IconButton(
-              iconSize: 48.0,
-              icon: const Icon(Icons.directions_car),
-              onPressed: (() => VoidCallback),
-            ),
             Consumer<GarageModel>(
               builder: (context, garage, child) => Column(
                 children: [
@@ -71,6 +66,11 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                   Text("License Plate: ${garage.cars[widget.carIndex].plate}"),
                   Text(
                       "Mileage: ${garage.cars[widget.carIndex].mileage.toString()}"),
+                  CircleAvatar(
+                      backgroundImage: AssetImage(
+                          garage.cars[widget.carIndex].icon ??
+                              'images/car.png'),
+                      backgroundColor: Colors.white),
                 ],
               ),
             ),
@@ -97,10 +97,10 @@ class CarTxns extends StatefulWidget {
   final int carIndex;
 
   @override
-  State<CarTxns> createState() => _CurrentCar();
+  State<CarTxns> createState() => _CarTxns();
 }
 
-class _CurrentCar extends State<CarTxns> {
+class _CarTxns extends State<CarTxns> {
   late Future _txns;
   late Car car;
 
@@ -112,10 +112,22 @@ class _CurrentCar extends State<CarTxns> {
     super.initState();
   }
 
+  Icon getIcon(String? txntype) {
+    if (txntype == 'Gas') {
+      return (const Icon(Icons.local_gas_station));
+    } else if (txntype == 'Oil') {
+      return (const Icon(Icons.water_drop));
+    } else if (txntype == 'Other') {
+      return (const Icon(Icons.build));
+    } else {
+      return (const Icon(Icons.question_mark));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // car =
-    //     Provider.of<GarageModel>(context, listen: false).cars[widget.carIndex];
+    // Provider.of<GarageModel>(context, listen: false).cars[widget.carIndex];
     // _txns = Provider.of<GarageModel>(context, listen: false).getTxns(car.id!);
     return FutureBuilder(
         future: _txns,
@@ -139,7 +151,7 @@ class _CurrentCar extends State<CarTxns> {
                         // dense: true, //only affects text, use visualDensity instead
                         visualDensity:
                             const VisualDensity(horizontal: 0, vertical: -4),
-                        leading: const Icon(Icons.local_gas_station),
+                        leading: getIcon(garage.txns[index].txntype),
                         title: Text(garage.txns[index].txntype ?? "type"),
                         subtitle: Text(garage.txns[index].note ?? "note"),
                         onTap: (() => VoidCallback)),

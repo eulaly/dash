@@ -5,8 +5,9 @@ class Car {
   static const colNickname = 'nickname';
   static const colPlate = 'plate';
   static const colMileage = 'mileage';
+  static const colIcon = 'icon';
 
-  Car({this.id, this.vin, this.plate, this.nickname, this.mileage});
+  Car({this.id, this.vin, this.plate, this.nickname, this.mileage, this.icon});
 
   Car.fromMap(Map<String, dynamic> map) {
     id = map[colId];
@@ -14,6 +15,7 @@ class Car {
     nickname = map[colNickname];
     plate = map[colPlate];
     mileage = map[colMileage];
+    icon = map[colIcon];
   }
 
   int? id;
@@ -21,6 +23,7 @@ class Car {
   String? plate;
   String? nickname;
   int? mileage;
+  String? icon;
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -28,6 +31,7 @@ class Car {
       colPlate: plate,
       colNickname: nickname,
       colMileage: mileage,
+      colIcon: icon,
     };
     // if (id != null) {
     // map[colId] = id; //not sure https://www.youtube.com/watch?v=tj7Lj9a3fyM

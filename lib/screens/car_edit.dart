@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dash/utils/garage_model.dart';
 import 'package:dash/models/car.dart';
+import 'package:dash/screens/iconpicker.dart';
 
 class EditCarScreen extends StatefulWidget {
   const EditCarScreen({super.key, required this.carIndex});
@@ -16,6 +17,8 @@ class _EditCarScreenState extends State<EditCarScreen> {
   late GarageModel garage;
   late Car car;
   late int carIndex = widget.carIndex;
+  late IconPicker ip = IconPicker();
+  late String selectedIcon = 'images/car.png';
 
   @override
   void initState() {
@@ -98,6 +101,22 @@ class _EditCarScreenState extends State<EditCarScreen> {
                   return null;
                 },
               ),
+              ListTile(
+                  leading: CircleAvatar(
+                      backgroundImage: AssetImage(car.icon ?? selectedIcon),
+                      backgroundColor: Colors.white),
+                  title: const Text("Change Icon"),
+                  onTap: () => showDialog(
+                      barrierColor: Colors.black.withOpacity(.5),
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ip;
+                      }).then((value) => setState(
+                        () {
+                          // selectedIcon = ip.selectedIcon;
+                          selectedIcon = value;
+                        },
+                      ))),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: ElevatedButton(
@@ -107,6 +126,7 @@ class _EditCarScreenState extends State<EditCarScreen> {
                       //validate form
                       updateForm
                           .save(); //save values (reqd before putting them anywhere)
+                      car.icon = selectedIcon;
                       garage.update(car, carIndex);
                       updateForm.reset();
                       Navigator.pop(context);

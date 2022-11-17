@@ -43,7 +43,8 @@ class DbHelperSqlite {
         ${Car.colVin} TEXT UNIQUE,
         ${Car.colNickname} TEXT,
         ${Car.colMileage} INTEGER,
-        ${Car.colPlate} TEXT);
+        ${Car.colPlate} TEXT,
+        ${Car.colIcon} TEXT);
         ''');
     await db.execute('''
       CREATE TABLE ${Txn.tblTxns} (

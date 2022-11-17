@@ -120,7 +120,10 @@ class _Garage extends State<Garage> {
               return ListView.separated(
                 itemCount: garage._cars.length,
                 itemBuilder: (context, index) => ListTile(
-                  leading: const Icon(Icons.directions_car),
+                  leading: CircleAvatar(
+                      backgroundImage: AssetImage(
+                          garage.cars[index].icon ?? 'images/car.png'),
+                      backgroundColor: Colors.white),
                   title: Text(garage.cars[index].nickname ?? "nick_ph"),
                   subtitle: Text(garage.cars[index].vin ?? "vin_ph"),
                   onTap: () {
