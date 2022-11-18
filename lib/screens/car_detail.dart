@@ -5,6 +5,7 @@ import 'package:dash/utils/garage_model.dart';
 // import 'package:dash/main.dart';
 import 'package:dash/models/car.dart';
 import 'package:dash/screens/screens.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CarDetailScreen extends StatefulWidget {
   const CarDetailScreen({super.key, required this.carIndex});
@@ -38,7 +39,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Center(
-                  // edit car screen
+                  // edit car
                   child: Ink(
                     decoration: const ShapeDecoration(
                         color: Colors.lightBlue, shape: CircleBorder()),
@@ -61,8 +62,19 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
             Consumer<GarageModel>(
               builder: (context, garage, child) => Column(
                 children: [
-                  Text("Nickname: ${garage.cars[widget.carIndex].nickname}"),
-                  Text("VIN: ${garage.cars[widget.carIndex].vin}"),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text("${garage.cars[widget.carIndex].nickname}"),
+                      ]),
+                  Text(
+                    "Nickname: ${garage.cars[widget.carIndex].nickname}",
+                    style: GoogleFonts.crimsonPro(),
+                  ),
+                  Text(
+                    "VIN: ${garage.cars[widget.carIndex].vin}",
+                    style: GoogleFonts.crimsonPro(),
+                  ),
                   Text("License Plate: ${garage.cars[widget.carIndex].plate}"),
                   Text(
                       "Mileage: ${garage.cars[widget.carIndex].mileage.toString()}"),

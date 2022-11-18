@@ -105,7 +105,10 @@ class _EditCarScreenState extends State<EditCarScreen> {
                   leading: CircleAvatar(
                       backgroundImage: AssetImage(car.icon ?? selectedIcon),
                       backgroundColor: Colors.white),
-                  title: const Text("Change Icon"),
+                  title: Text(
+                    "Change Icon",
+                    style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                  ),
                   onTap: () => showDialog(
                       barrierColor: Colors.black.withOpacity(.5),
                       context: context,
@@ -113,7 +116,6 @@ class _EditCarScreenState extends State<EditCarScreen> {
                         return ip;
                       }).then((value) => setState(
                         () {
-                          // selectedIcon = ip.selectedIcon;
                           selectedIcon = value;
                         },
                       ))),

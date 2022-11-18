@@ -86,7 +86,10 @@ class _NewCarScreenState extends State<NewCarScreen> {
                   leading: CircleAvatar(
                       backgroundImage: AssetImage(selectedIcon),
                       backgroundColor: Colors.white),
-                  title: const Text("Change Icon"),
+                  title: Text(
+                    "Change Icon",
+                    style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                  ),
                   onTap: () => showDialog(
                       barrierColor: Colors.black.withOpacity(.5),
                       context: context,

@@ -8,15 +8,17 @@ import 'package:dash/utils/dbhelper_sqflite.dart';
 import 'package:dash/models/car.dart';
 import 'package:dash/models/txn.dart';
 import 'package:dash/screens/screens.dart';
+import 'package:dash/theme.dart';
 // import 'package:flutter/src/widgets/form.dart';
 
 void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => GarageModel(),
-      child: const MaterialApp(
+      child: MaterialApp(
         title: 'Dashboard',
         home: MyApp(),
+        theme: appTheme,
 /*         initialRoute: '/',
         routes: {
           '/': (context) => const MyApp(),
